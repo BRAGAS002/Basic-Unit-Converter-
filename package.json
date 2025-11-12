@@ -1,0 +1,28 @@
+{
+  "name": "unit-converter-apk-download",
+  "version": "2.1.0",
+  "description": "Unit Converter PWA with APK download functionality",
+  "main": "api/download.js",
+  "scripts": {
+    "dev": "node api/download.js",
+    "start": "node api/download.js",
+    "build": "echo 'Build complete'",
+    "vercel-build": "echo 'Vercel build complete'"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "keywords": [
+    "unit-converter",
+    "pwa",
+    "apk-download",
+    "android",
+    "vercel"
+  ],
+  "author": "Unit Converter Team",
+  "license": "MIT"
+}

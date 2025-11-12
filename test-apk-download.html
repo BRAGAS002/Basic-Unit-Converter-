@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Download Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .success { color: #28a745; }
+        .error { color: #dc3545; }
+        .info { color: #17a2b8; }
+        #test-results {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>APK Download API Test</h1>
+    
+    <div class="test-section">
+        <h2>API Endpoint Tests</h2>
+        <button class="test-button" onclick="testAPIEndpoint()">Test API Endpoint</button>
+        <button class="test-button" onclick="testDownloadHeaders()">Test Download Headers</button>
+        <button class="test-button" onclick="testCORS()">Test CORS</button>
+        <button class="test-button" onclick="testDownloadProgress()">Test Download Progress</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Browser Compatibility Tests</h2>
+        <button class="test-button" onclick="testBrowserSupport()">Test Browser Support</button>
+        <button class="test-button" onclick="testMobileDownload()">Test Mobile Download</button>
+    </div>
+    
+    <div class="test-section">
+        <h2>Error Handling Tests</h2>
+        <button class="test-button" onclick="testMissingFile()">Test Missing File</button>
+        <button class="test-button" onclick="testNetworkError()">Test Network Error</button>
+    </div>
+    
+    <div id="test-results"></div>
+
+    <script>
+        const API_ENDPOINT = 'http://localhost:3000/api/download';
+        const VERCEL_ENDPOINT = 'https://basic-unit-converter-6sguo2618-franxxs-projects-c1a3f89f.vercel.app/api/download';
+        
+        function log(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'success' ? 'green' : type === 'error' ? 'red' : 'blue';
+            results.innerHTML += `<span style="color: ${color}">[${timestamp}] ${message}</span>\n`;
+            results.scrollTop = results.scrollHeight;
+        }
+        
+        async function testAPIEndpoint() {
+            log('Testing API endpoint...', 'info');
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'HEAD',
+                    mode: 'cors'
+                });
+                
+                if (response.ok) {
+                    log(`✅ API endpoint is accessible (${response.status})`, 'success');
+                    log(`Content-Type: ${response.headers.get('content-type')}`, 'info');
+                    log(`Content-Length: ${response.headers.get('content-length')}`, 'info');
+                    log(`Content-Disposition: ${response.headers.get('content-disposition')}`, 'info');
+                } else {
+                    log(`❌ API endpoint returned error: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ API endpoint test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDownloadHeaders() {
+            log('Testing download headers...', 'info');
+            try {
+                const response = await fetch(API_ENDPOINT);
+                const headers = {
+                    'Content-Type': response.headers.get('content-type'),
+                    'Content-Length': response.headers.get('content-length'),
+                    'Content-Disposition': response.headers.get('content-disposition'),
+                    'Cache-Control': response.headers.get('cache-control'),
+                    'Access-Control-Allow-Origin': response.headers.get('access-control-allow-origin')
+                };
+                
+                log('Response headers:', 'info');
+                Object.entries(headers).forEach(([key, value]) => {
+                    if (value) {
+                        log(`  ${key}: ${value}`, 'info');
+                    }
+                });
+                
+                // Check if headers are correct for APK download
+                if (headers['Content-Type'] === 'application/vnd.android.package-archive') {
+                    log('✅ Correct MIME type for APK files', 'success');
+                } else {
+                    log('❌ Incorrect MIME type for APK files', 'error');
+                }
+                
+                if (headers['Content-Disposition'] && headers['Content-Disposition'].includes('attachment')) {
+                    log('✅ Correct Content-Disposition for download', 'success');
+                } else {
+                    log('❌ Incorrect Content-Disposition for download', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Download headers test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testCORS() {
+            log('Testing CORS configuration...', 'info');
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'OPTIONS',
+                    mode: 'cors',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'GET'
+                    }
+                });
+                
+                if (response.ok) {
+                    log('✅ CORS preflight request successful', 'success');
+                    const allowOrigin = response.headers.get('access-control-allow-origin');
+                    const allowMethods = response.headers.get('access-control-allow-methods');
+                    
+                    log(`Access-Control-Allow-Origin: ${allowOrigin}`, 'info');
+                    log(`Access-Control-Allow-Methods: ${allowMethods}`, 'info');
+                    
+                    if (allowOrigin === '*' || allowOrigin === window.location.origin) {
+                        log('✅ CORS origin configuration is correct', 'success');
+                    }
+                } else {
+                    log(`❌ CORS preflight failed: ${response.status}`, 'error');
+                }
+            } catch (error) {
+                log(`❌ CORS test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        async function testDownloadProgress() {
+            log('Testing download progress tracking...', 'info');
+            
+            try {
+                const response = await fetch(API_ENDPOINT);
+                const reader = response.body.getReader();
+                const contentLength = response.headers.get('content-length');
+                const total = parseInt(contentLength, 10);
+                
+                let received = 0;
+                let chunks = [];
+                
+                log(`Starting download of ${total} bytes...`, 'info');
+                
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) {
+                        log('✅ Download completed successfully', 'success');
+                        break;
+                    }
+                    
+                    chunks.push(value);
+                    received += value.length;
+                    
+                    const progress = Math.round((received / total) * 100);
+                    log(`Progress: ${progress}% (${received}/${total} bytes)`, 'info');
+                }
+                
+                // Create blob and download
+                const blob = new Blob(chunks, { type: 'application/vnd.android.package-archive' });
+                log(`✅ Downloaded file size: ${blob.size} bytes`, 'success');
+                
+                // Create download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'UnitConverter-v2.1.0.apk';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                log('✅ File download initiated', 'success');
+                
+            } catch (error) {
+                log(`❌ Download progress test failed: ${error.message}`, 'error');
+            }
+        }
+        
+        function testBrowserSupport() {
+            log('Testing browser support...', 'info');
+            
+            // Test Fetch API
+            if ('fetch' in window) {
+                log('✅ Fetch API is supported', 'success');
+            } else {
+                log('❌ Fetch API is not supported', 'error');
+            }
+            
+            // Test ReadableStream
+            if ('ReadableStream' in window) {
+                log('✅ ReadableStream is supported', 'success');
+            } else {
+                log('❌ ReadableStream is not supported', 'error');
+            }
+            
+            // Test Blob
+            if ('Blob' in window) {
+                log('✅ Blob API is supported', 'success');
+            } else {
+                log('❌ Blob API is not supported', 'error');
+            }
+            
+            // Test URL.createObjectURL
+            if ('URL' in window && 'createObjectURL' in window.URL) {
+                log('✅ URL.createObjectURL is supported', 'success');
+            } else {
+                log('❌ URL.createObjectURL is not supported', 'error');
+            }
+            
+            // Test user agent
+            log(`User Agent: ${navigator.userAgent}`, 'info');
+        }
+        
+        function testMobileDownload() {
+            log('Testing mobile download compatibility...', 'info');
+            
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                log('✅ Mobile device detected', 'success');
+                log('Testing mobile-specific download behavior...', 'info');
+            } else {
+                log('ℹ️ Desktop device detected', 'info');
+                log('Mobile download test skipped', 'info');
+            }
+            
+            // Test screen size
+            log(`Screen size: ${window.screen.width}x${window.screen.height}`, 'info');
+            log(`Viewport size: ${window.innerWidth}x${window.innerHeight}`, 'info');
+        }
+        
+        async function testMissingFile() {
+            log('Testing missing file handling...', 'info');
+            try {
+                const response = await fetch('http://localhost:3000/api/download/nonexistent');
+                
+                if (!response.ok) {
+                    log(`✅ Correctly handled missing file: ${response.status}`, 'success');
+                } else {
+                    log('❌ Missing file was not handled correctly', 'error');
+                }
+            } catch (error) {
+                log(`✅ Network error for missing file: ${error.message}`, 'success');
+            }
+        }
+        
+        async function testNetworkError() {
+            log('Testing network error handling...', 'info');
+            try {
+                const response = await fetch('http://localhost:9999/api/download');
+                log('❌ Network error was not caught', 'error');
+            } catch (error) {
+                log(`✅ Network error correctly handled: ${error.message}`, 'success');
+            }
+        }
+        
+        // Run automatic tests on page load
+        window.addEventListener('load', () => {
+            log('APK Download Test Suite Started', 'info');
+            log('Testing local API server (localhost:3000)', 'info');
+            log('=====================================', 'info');
+        });
+    </script>
+</body>
+</html>

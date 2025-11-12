@@ -678,62 +678,189 @@ class APKModal {
         this.progressSection.classList.remove('hidden');
         this.updateLanguage(); // Update button text
         
-        // Simulate download progress
-        this.downloadProgress = 0;
-        this.simulateDownload();
+        // Determine API endpoint based on environment
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const apiEndpoint = isLocalhost 
+            ? 'http://localhost:3000/api/download'
+            : 'https://basic-unit-converter-6sguo2618-franxxs-projects-c1a3f89f.vercel.app/api/download';
+        
+        this.downloadAPK(apiEndpoint);
     }
     
-    simulateDownload() {
-        const interval = setInterval(() => {
-            this.downloadProgress += Math.random() * 15;
+    async downloadAPK(apiEndpoint) {
+        try {
+            // First, get the file info to determine size
+            const fileInfo = await this.getFileInfo(apiEndpoint);
             
-            if (this.downloadProgress >= 100) {
-                this.downloadProgress = 100;
-                this.updateProgress();
-                this.completeDownload();
-                clearInterval(interval);
-            } else {
-                this.updateProgress();
+            if (!fileInfo.exists) {
+                throw new Error('APK file not found on server');
             }
-        }, 500);
+            
+            // Start the actual download
+            const response = await fetch(apiEndpoint, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/vnd.android.package-archive'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Download failed: ${response.status} ${response.statusText}`);
+            }
+            
+            const contentLength = response.headers.get('content-length');
+            const totalSize = contentLength ? parseInt(contentLength, 10) : fileInfo.size;
+            
+            // Create download with progress tracking
+            await this.downloadWithProgress(response, totalSize);
+            
+        } catch (error) {
+            console.error('Download error:', error);
+            this.handleDownloadError(error);
+        }
+    }
+    
+    async getFileInfo(apiEndpoint) {
+        try {
+            // Try to get file info from server
+            const response = await fetch(`${apiEndpoint}/info`, {
+                method: 'HEAD'
+            });
+            
+            const contentLength = response.headers.get('content-length');
+            const lastModified = response.headers.get('last-modified');
+            
+            return {
+                exists: response.ok,
+                size: contentLength ? parseInt(contentLength, 10) : 15200000, // Default 15.2MB
+                lastModified: lastModified
+            };
+        } catch (error) {
+            console.warn('Could not get file info, using defaults');
+            return {
+                exists: true,
+                size: 15200000, // Default 15.2MB
+                lastModified: null
+            };
+        }
+    }
+    
+    async downloadWithProgress(response, totalSize) {
+        const reader = response.body.getReader();
+        const chunks = [];
+        let receivedLength = 0;
+        
+        // Update progress to show download started
+        this.downloadProgress = 0;
+        this.updateProgress();
+        
+        while (true) {
+            const { done, value } = await reader.read();
+            
+            if (done) {
+                break;
+            }
+            
+            chunks.push(value);
+            receivedLength += value.length;
+            
+            // Update progress
+            this.downloadProgress = Math.round((receivedLength / totalSize) * 100);
+            this.updateProgress();
+            
+            // Add small delay to make progress visible
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        
+        // Combine all chunks into a single blob
+        const blob = new Blob(chunks, { type: 'application/vnd.android.package-archive' });
+        
+        // Create download link
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = 'UnitConverter-v2.1.0.apk';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        window.URL.revokeObjectURL(downloadUrl);
+        
+        // Complete the download process
+        this.completeDownload();
+    }
+    
+    handleDownloadError(error) {
+        console.error('Download failed:', error);
+        
+        // Reset download state
+        this.isDownloading = false;
+        this.downloadBtn.disabled = false;
+        this.progressSection.classList.add('hidden');
+        this.downloadProgress = 0;
+        
+        // Show error message
+        const errorMessage = error.message || 'Download failed. Please try again.';
+        
+        // Update button to show error state
+        this.downloadBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Download Failed
+        `;
+        this.downloadBtn.style.background = '#ef4444';
+        
+        // Reset button after 5 seconds
+        setTimeout(() => {
+            this.updateLanguage();
+            this.downloadBtn.style.background = '';
+        }, 5000);
+        
+        // Log error for debugging
+        console.error('APK Download Error:', {
+            message: error.message,
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            url: window.location.href
+        });
     }
     
     updateProgress() {
         this.progressBar.style.width = `${this.downloadProgress}%`;
         const progressText = document.querySelector('.progress-text');
         if (progressText) {
+            const currentSize = Math.round((this.downloadProgress / 100) * 15.2); // Assuming 15.2MB total
             progressText.innerHTML = `
                 <span>${Math.round(this.downloadProgress)}%</span>
-                <span>${this.formatFileSize(this.downloadProgress * 0.15)} / 15.2 MB</span>
+                <span>${currentSize.toFixed(1)} MB / 15.2 MB</span>
             `;
         }
     }
     
-    formatFileSize(bytes) {
-        if (bytes === 0) return '0 B';
-        const k = 1024;
-        const sizes = ['B', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    }
-    
     completeDownload() {
-        // Simulate download completion
+        // Download is actually complete, show success state
+        this.isDownloading = false;
+        this.downloadProgress = 100;
+        this.updateProgress();
+        
+        // Show success message
+        this.downloadBtn.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"/>
+            </svg>
+            Download Complete!
+        `;
+        this.downloadBtn.style.background = '#059669';
+        
+        // Hide progress bar after a short delay
         setTimeout(() => {
-            this.isDownloading = false;
-            this.downloadBtn.disabled = false;
             this.progressSection.classList.add('hidden');
+            this.downloadBtn.disabled = false;
             this.downloadProgress = 0;
-            
-            // Show success message
-            const originalText = this.downloadBtn.innerHTML;
-            this.downloadBtn.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20,6 9,17 4,12"/>
-                </svg>
-                Download Complete!
-            `;
-            this.downloadBtn.style.background = '#059669';
             
             // Reset button after 3 seconds
             setTimeout(() => {
@@ -745,8 +872,15 @@ class APKModal {
             setTimeout(() => {
                 this.hideModal();
             }, 2000);
-            
-        }, 1000);
+        }, 1500);
+    }
+    
+    formatFileSize(bytes) {
+        if (bytes === 0) return '0 B';
+        const k = 1024;
+        const sizes = ['B', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
     }
 }
 
