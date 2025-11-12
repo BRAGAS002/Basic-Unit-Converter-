@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter - Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .test-section {
+            background: #f5f5f5;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>Unit Converter PWA - Test Page</h1>
+    
+    <div class="test-section">
+        <h2>PWA Features Test</h2>
+        <div id="pwa-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Browser Compatibility</h2>
+        <div id="browser-status"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Installation Instructions</h2>
+        <p><strong>For testing the actual converter:</strong></p>
+        <ol>
+            <li>Open <code>index.html</code> in your browser</li>
+            <li>The PWA features will be automatically available</li>
+            <li>Look for the install prompt or use browser menu to install</li>
+        </ol>
+        
+        <p><strong>To test offline functionality:</strong></p>
+        <ol>
+            <li>Load the app while online</li>
+            <li>Turn off your internet connection</li>
+            <li>Refresh the page - it should still work!</li>
+        </ol>
+    </div>
+    
+    <div class="test-section">
+        <h2>Quick Links</h2>
+        <ul>
+            <li><a href="index.html">Open Unit Converter</a></li>
+            <li><a href="manifest.json">View Manifest</a></li>
+            <li><a href="sw.js">View Service Worker</a></li>
+        </ul>
+    </div>
+
+    <script>
+        // Test PWA features
+        function testPWAFeatures() {
+            const statusDiv = document.getElementById('pwa-status');
+            
+            // Test service worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistration().then(registration => {
+                    if (registration) {
+                        statusDiv.innerHTML += '<div class="status success">✓ Service Worker registered</div>';
+                    } else {
+                        statusDiv.innerHTML += '<div class="status error">✗ Service Worker not registered</div>';
+                    }
+                });
+            } else {
+                statusDiv.innerHTML += '<div class="status error">✗ Service Worker not supported</div>';
+            }
+            
+            // Test manifest
+            if ('beforeinstallprompt' in window) {
+                statusDiv.innerHTML += '<div class="status success">✓ Install prompt supported</div>';
+            } else {
+                statusDiv.innerHTML += '<div class="status info">ℹ Install prompt not available (may still be installable via menu)</div>';
+            }
+            
+            // Test offline
+            statusDiv.innerHTML += `<div class="status ${navigator.onLine ? 'success' : 'error'}">
+                ${navigator.onLine ? '✓ Online' : '✗ Offline'}
+            </div>`;
+        }
+        
+        // Test browser compatibility
+        function testBrowserCompatibility() {
+            const statusDiv = document.getElementById('browser-status');
+            const features = [
+                { name: 'Service Worker', supported: 'serviceWorker' in navigator },
+                { name: 'Web App Manifest', supported: 'beforeinstallprompt' in window },
+                { name: 'Local Storage', supported: 'localStorage' in window },
+                { name: 'Fetch API', supported: 'fetch' in window },
+                { name: 'Promise', supported: 'Promise' in window },
+                { name: 'ES6 Classes', supported: (function() { try { eval('class Test {}'); return true; } catch(e) { return false; } })() }
+            ];
+            
+            features.forEach(feature => {
+                const status = feature.supported ? 'success' : 'error';
+                const icon = feature.supported ? '✓' : '✗';
+                statusDiv.innerHTML += `<div class="status ${status}">${icon} ${feature.name}</div>`;
+            });
+        }
+        
+        // Run tests
+        testPWAFeatures();
+        testBrowserCompatibility();
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter - Length & Temperature</title>
+    <meta name="description" content="A simple unit converter for length and temperature measurements">
+    <meta name="theme-color" content="#2563eb">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">Unit Converter</h1>
+            <p class="subtitle">Convert Length & Temperature</p>
+        </header>
+
+        <main class="main">
+            <!-- Converter Type Selector -->
+            <div class="converter-selector">
+                <button class="selector-btn active" data-type="length">Length</button>
+                <button class="selector-btn" data-type="temperature">Temperature</button>
+            </div>
+
+            <!-- Length Converter -->
+            <div class="converter-section" id="length-converter">
+                <div class="input-group">
+                    <label for="length-input" class="input-label">Value</label>
+                    <input type="number" id="length-input" class="input-field" placeholder="Enter value" step="any">
+                </div>
+
+                <div class="unit-selectors">
+                    <div class="unit-group">
+                        <label for="length-from" class="unit-label">From</label>
+                        <select id="length-from" class="unit-select">
+                            <option value="m">Meters (m)</option>
+                            <option value="km">Kilometers (km)</option>
+                            <option value="cm">Centimeters (cm)</option>
+                            <option value="mm">Millimeters (mm)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="yd">Yards (yd)</option>
+                            <option value="mi">Miles (mi)</option>
+                        </select>
+                    </div>
+
+                    <button class="swap-btn" id="length-swap" aria-label="Swap units">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                        </svg>
+                    </button>
+
+                    <div class="unit-group">
+                        <label for="length-to" class="unit-label">To</label>
+                        <select id="length-to" class="unit-select">
+                            <option value="m">Meters (m)</option>
+                            <option value="km" selected>Kilometers (km)</option>
+                            <option value="cm">Centimeters (cm)</option>
+                            <option value="mm">Millimeters (mm)</option>
+                            <option value="ft">Feet (ft)</option>
+                            <option value="in">Inches (in)</option>
+                            <option value="yd">Yards (yd)</option>
+                            <option value="mi">Miles (mi)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="result-group">
+                    <label class="result-label">Result</label>
+                    <div class="result-display" id="length-result">0</div>
+                </div>
+            </div>
+
+            <!-- Temperature Converter -->
+            <div class="converter-section hidden" id="temperature-converter">
+                <div class="input-group">
+                    <label for="temperature-input" class="input-label">Value</label>
+                    <input type="number" id="temperature-input" class="input-field" placeholder="Enter value" step="any">
+                </div>
+
+                <div class="unit-selectors">
+                    <div class="unit-group">
+                        <label for="temperature-from" class="unit-label">From</label>
+                        <select id="temperature-from" class="unit-select">
+                            <option value="c">Celsius (°C)</option>
+                            <option value="f">Fahrenheit (°F)</option>
+                            <option value="k">Kelvin (K)</option>
+                        </select>
+                    </div>
+
+                    <button class="swap-btn" id="temperature-swap" aria-label="Swap units">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                        </svg>
+                    </button>
+
+                    <div class="unit-group">
+                        <label for="temperature-to" class="unit-label">To</label>
+                        <select id="temperature-to" class="unit-select">
+                            <option value="c">Celsius (°C)</option>
+                            <option value="f" selected>Fahrenheit (°F)</option>
+                            <option value="k">Kelvin (K)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="result-group">
+                    <label class="result-label">Result</label>
+                    <div class="result-display" id="temperature-result">0</div>
+                </div>
+            </div>
+
+            <!-- Clear Button -->
+            <button class="clear-btn" id="clear-btn">Clear All</button>
+        </main>
+
+        <footer class="footer">
+            <p>Made with ❤️ for easy unit conversion</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

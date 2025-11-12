@@ -1,0 +1,102 @@
+{
+  "name": "Unit Converter - Length & Temperature",
+  "short_name": "Unit Converter",
+  "description": "A simple and fast unit converter for length and temperature measurements. Works offline and installs on your device.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "orientation": "portrait-primary",
+  "categories": ["utilities", "productivity"],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Unit Converter Mobile View"
+    },
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Unit Converter Desktop View"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Convert Length",
+      "short_name": "Length",
+      "description": "Quickly convert length units",
+      "url": "/index.html?type=length",
+      "icons": [{ "src": "length-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Convert Temperature",
+      "short_name": "Temperature",
+      "description": "Quickly convert temperature units",
+      "url": "/index.html?type=temperature",
+      "icons": [{ "src": "temperature-icon.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [
+    {
+      "platform": "webapp",
+      "url": "https://your-domain.com/manifest.json"
+    }
+  ],
+  "prefer_related_applications": false,
+  "lang": "en",
+  "dir": "ltr"
+}
