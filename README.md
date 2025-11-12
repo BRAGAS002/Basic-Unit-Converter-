@@ -12,6 +12,7 @@ A Progressive Web App for converting length and temperature units. Works offline
 - 🌐 **Offline Support**: Works without internet connection
 - ⚡ **Fast & Lightweight**: Minimal loading time
 - ♿ **Accessible**: Keyboard navigation and screen reader support
+- 📥 **APK Download Modal**: Persistent modal for APK downloads with multi-language support
 
 ## Installation
 
@@ -59,6 +60,20 @@ A Progressive Web App for converting length and temperature units. Works offline
 - `Ctrl/Cmd + T`: Switch to Temperature converter
 - `Escape`: Clear all inputs
 
+### APK Download Modal
+The app includes a persistent modal that appears on page refresh:
+- **Multi-language support**: 12 languages including RTL support for Arabic
+- **Download progress tracking**: Visual progress bar with percentage
+- **User preferences**: "Remind me later" and "Don't show again" options
+- **Responsive design**: Works on all screen sizes
+- **Dark mode support**: Automatic theme detection
+- **Accessibility**: Keyboard navigation and screen reader support
+
+The modal respects user choices:
+- If dismissed with "Don't show again", it won't appear again
+- If "Remind me later" is chosen, it reappears after 24 hours
+- Language preference is saved across sessions
+
 ## Technical Details
 
 ### Built With
@@ -84,13 +99,17 @@ A Progressive Web App for converting length and temperature units. Works offline
 
 ```
 unit-converter/
-├── index.html          # Main HTML file
-├── styles.css          # CSS styles with responsive design
-├── script.js           # JavaScript functionality
-├── manifest.json       # PWA configuration
-├── sw.js              # Service Worker for offline support
-├── icon.svg           # App icon source
-└── README.md          # This file
+├── index.html              # Main HTML file with APK modal
+├── styles.css              # CSS styles with responsive design and modal styling
+├── script.js               # JavaScript functionality including APK modal
+├── manifest.json           # PWA configuration
+├── sw.js                   # Service Worker for offline support
+├── icon.svg                # App icon source
+├── APK_MODAL_FEATURES.md   # APK modal documentation
+├── start-server.ps1        # PowerShell server script
+├── start-server.bat        # Batch server script
+├── test.html               # PWA testing page
+└── README.md               # This file
 ```
 
 ## Development

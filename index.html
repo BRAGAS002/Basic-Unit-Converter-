@@ -123,6 +123,95 @@
         </footer>
     </div>
 
+    <!-- APK Download Modal -->
+    <div id="apk-modal" class="modal-overlay" role="dialog" aria-labelledby="modal-title" aria-hidden="true">
+        <div class="modal-content" role="document">
+            <button class="modal-close" aria-label="Close modal" type="button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+            
+            <div class="modal-header">
+                <div class="app-icon">
+                    <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                        <rect width="64" height="64" rx="16" fill="#2563eb"/>
+                        <path d="M16 20L48 20" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M16 32L48 32" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M16 44L48 44" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                        <circle cx="48" cy="20" r="3" fill="#10b981"/>
+                    </svg>
+                </div>
+                <h2 id="modal-title" class="modal-title" data-i18n="modal.title">Unit Converter</h2>
+                <p class="modal-subtitle" data-i18n="modal.subtitle">Get the Android App</p>
+            </div>
+            
+            <div class="modal-body">
+                <div class="app-info">
+                    <div class="version-info">
+                        <span class="version-label" data-i18n="modal.version">Version:</span>
+                        <span class="version-number" id="app-version">2.1.0</span>
+                    </div>
+                    <div class="size-info">
+                        <span class="size-label" data-i18n="modal.size">Size:</span>
+                        <span class="size-number" id="app-size">4.2 MB</span>
+                    </div>
+                    <div class="features-list">
+                        <div class="feature-item" data-i18n="modal.feature1">✓ Works offline</div>
+                        <div class="feature-item" data-i18n="modal.feature2">✓ Faster performance</div>
+                        <div class="feature-item" data-i18n="modal.feature3">✓ No ads</div>
+                        <div class="feature-item" data-i18n="modal.feature4">✓ Regular updates</div>
+                    </div>
+                </div>
+                
+                <div class="download-section">
+                    <button id="download-btn" class="download-button" data-i18n="modal.download">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Download APK
+                    </button>
+                    
+                    <div id="download-progress" class="download-progress hidden">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progress-fill"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span id="progress-percent">0%</span>
+                            <span id="progress-size">0 MB / 4.2 MB</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="language-selector">
+                    <label for="language-select" data-i18n="modal.language">Language:</label>
+                    <select id="language-select" class="language-select">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="it">Italiano</option>
+                        <option value="pt">Português</option>
+                        <option value="ru">Русский</option>
+                        <option value="zh">中文</option>
+                        <option value="ja">日本語</option>
+                        <option value="ko">한국어</option>
+                        <option value="ar">العربية</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="later-button" data-i18n="modal.later" id="remind-later">Remind me later</button>
+                <button class="dismiss-button" data-i18n="modal.dismiss" id="dismiss-modal">Don't show again</button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
